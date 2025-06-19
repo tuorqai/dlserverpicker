@@ -61,6 +61,7 @@ MainFrame::MainFrame()
         );
     }
 
+    SetIcons(wxICON(dlsp));
     m_infoLabel->SetLabelText("Deadlock Server Picker v" DL_SERVER_PICKER_VERSION);
 }
 
