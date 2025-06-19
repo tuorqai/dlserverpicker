@@ -1,0 +1,35 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "win64",
+      "displayName": "Windows x64",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "win64-dbg",
+      "configurePreset": "win64",
+      "configuration": "Debug"
+    },
+    {
+      "name": "win64-rel",
+      "configurePreset": "win64",
+      "configuration": "Release"
+    }
+  ]
+}
