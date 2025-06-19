@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main", "ci-test" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: seanmiddleditch/gha-setup-vsdevenv@master
+
+    - name: Configure CMake
+      run: cmake --preset win64
+
+    - name: Build
+      run: cmake --build --preset win64-rel
+
+    - uses: actions/upload-artifact@v4
+      with:
+        path: out/build/win64/Release/DeadlockServerPicker.exe
