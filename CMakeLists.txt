@@ -61,3 +61,12 @@ FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download
 FetchContent_MakeAvailable(json)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+
+#-------------------------------------------------------------------------------
+
+if(NOT WIN32)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(NFTABLES REQUIRED libnftables)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${NFTABLES_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${NFTABLES_LIBRARIES})
+endif()
