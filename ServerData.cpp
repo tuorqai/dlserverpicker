@@ -35,7 +35,7 @@ bool ServerData::RestoreFromCache()
     wxString userDataDir = wxStandardPaths::Get().GetUserDataDir();
 
     if (!wxDirExists(userDataDir)) {
-        if (!wxMkDir(userDataDir)) {
+        if (!wxMkDir(userDataDir, wxS_DIR_DEFAULT)) {
             return false;
         }
     }

@@ -73,7 +73,7 @@ void ServerDataModel::GetValue(wxVariant &variant, wxDataViewItem const &item, u
         } else if (location.ping <= 1) {
             variant = "<1 ms";
         } else {
-            variant = wxString::Format("%d ms", location.ping);
+            variant = wxString::Format("%ld ms", location.ping);
         }
         break;
     default:

@@ -23,7 +23,16 @@ if(WIN32)
 
         # Modifying Firewall settings requires Administrator privileges
         LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
+elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    # Linux-specific sources
+    target_sources(${PROJECT_NAME} PRIVATE
+        "LinuxFirewallManager.cpp"
+        "LinuxPingTest.cpp")
 endif()
+
+#-------------------------------------------------------------------------------
+
+option(USE_SYSTEM_WXWIDGETS "Use system wxWidgets" OFF)
 
 #-------------------------------------------------------------------------------
 
@@ -31,14 +40,20 @@ include(FetchContent)
 
 #-------------------------------------------------------------------------------
 
-set(wxBUILD_SHARED OFF)
-set(wxBUILD_SAMPLES OFF)
-set(wxBUILD_INSTALL OFF)
+if(USE_SYSTEM_WXWIDGETS)
+    find_package(wxWidgets REQUIRED core base net)
+    include(${wxWidgets_USE_FILE})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${wxWidgets_LIBRARIES})
+else()
+    set(wxBUILD_SHARED OFF)
+    set(wxBUILD_SAMPLES OFF)
+    set(wxBUILD_INSTALL OFF)
 
-FetchContent_Declare(wxWidgets URL https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.7/wxWidgets-3.2.7.tar.bz2)
-FetchContent_MakeAvailable(wxWidgets)
+    FetchContent_Declare(wxWidgets URL https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.7/wxWidgets-3.2.7.tar.bz2)
+    FetchContent_MakeAvailable(wxWidgets)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE wxcore wxnet wxbase)
+    target_link_libraries(${PROJECT_NAME} PRIVATE wxcore wxnet wxbase)
+endif()
 
 #-------------------------------------------------------------------------------
 
