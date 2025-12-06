@@ -68,7 +68,9 @@ void ServerDataModel::GetValue(wxVariant &variant, wxDataViewItem const &item, u
         variant = FirewallManager::Get()->IsLocationBlocked(location);
         break;
     case SERVER_DATA_COL_PING:
-        if (location.ping == -1) {
+        if (location.ping == -2) {
+            variant = "No IP";
+        } else if (location.ping == -1) {
             variant = "N/A";
         } else if (location.ping <= 1) {
             variant = "<1 ms";
