@@ -54,6 +54,7 @@ void LinuxPingTest::Invoke(wxEvtHandler &evtHandler, ServerData const &serverDat
 
         if (sock < 0) {
             m_isActive = false;
+            evtHandler.QueueEvent(new wxCommandEvent(EVT_PING_TEST_FAILED));
             return;
         }
 
@@ -67,11 +68,10 @@ void LinuxPingTest::Invoke(wxEvtHandler &evtHandler, ServerData const &serverDat
 
             if (location.relays.empty()) {
                 wxCommandEvent *event = new wxCommandEvent(EVT_PING_TEST_PROGRESS);
-
                 event->SetInt(static_cast<int>(i));
                 event->SetExtraLong(-2);
-
                 evtHandler.QueueEvent(event);
+
                 continue;
             }
 
@@ -80,32 +80,29 @@ void LinuxPingTest::Invoke(wxEvtHandler &evtHandler, ServerData const &serverDat
             inet_pton(AF_INET, location.relays[0].ipv4, &dest.sin_addr);
 
             char packet[64] = { 0 };
+            struct icmphdr *icmp = reinterpret_cast<struct icmphdr *>(&packet);
 
-            struct icmphdr *icmp = (struct icmphdr *) &packet;
             icmp->type = ICMP_ECHO;
             icmp->un.echo.id = htons(getpid());
             icmp->un.echo.sequence = htons(i);
 
             wxLongLong startTimeMillis = wxGetUTCTimeMillis();
 
-            if (sendto(sock, packet, sizeof(packet), 0, (struct sockaddr *) &dest, sizeof(dest)) < 0) {
+            if (sendto(sock, packet, sizeof(packet), 0, reinterpret_cast<struct sockaddr *>(&dest), sizeof(dest)) < 0) {
                 continue;
             }
 
-            char recv[1024];
-            struct sockaddr_in src;
-            socklen_t srclen;
-            if (recvfrom(sock, recv, sizeof(recv), 0, (struct sockaddr *) &src, &srclen) < 0) {
+            char recv[64];
+
+            if (recvfrom(sock, recv, sizeof(recv), 0, nullptr, nullptr) < 0) {
                 continue;
             }
 
             wxLongLong endTimeMillis = wxGetUTCTimeMillis();
 
             wxCommandEvent *event = new wxCommandEvent(EVT_PING_TEST_PROGRESS);
-
             event->SetInt(static_cast<int>(i));
             event->SetExtraLong(static_cast<long>((endTimeMillis - startTimeMillis).GetValue()));
-
             evtHandler.QueueEvent(event);
         }
 
