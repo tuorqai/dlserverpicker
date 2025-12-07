@@ -24,10 +24,7 @@ public:
     bool IsClear() override;
 
 private:
-    void CheckTables();
-
     nft_ctx *m_nftCtx;
-    std::vector<wxString> m_definedRules;
 };
 
 //------------------------------------------------------------------------------
@@ -36,10 +33,11 @@ LinuxFirewallManager::LinuxFirewallManager()
 {
     m_nftCtx = nft_ctx_new(NFT_CTX_DEFAULT);
 
-    nft_ctx_buffer_output(m_nftCtx);
-    nft_ctx_output_set_flags(m_nftCtx, NFT_CTX_OUTPUT_JSON);
+    if (!m_nftCtx) {
+        throw std::runtime_error("nftables: failed to get context");
+    }
 
-    CheckTables();
+    nft_ctx_output_set_flags(m_nftCtx, NFT_CTX_OUTPUT_JSON);
 }
 
 LinuxFirewallManager::~LinuxFirewallManager()
@@ -54,91 +52,88 @@ bool LinuxFirewallManager::IsFirewallEnabled()
 
 bool LinuxFirewallManager::IsLocationBlocked(ServerData::Location const &location)
 {
-    wxString rule = wxString::Format("deadlock_%s", location.identifier);
+    nft_ctx_buffer_output(m_nftCtx);
 
-    return std::find(m_definedRules.begin(), m_definedRules.end(), rule) != m_definedRules.end();
+    int rc = nft_run_cmd_from_buffer(m_nftCtx, "list table inet dlserverpicker");
+
+    if (rc != 0) {
+        return false;
+    }
+
+    auto output = nlohmann::json::parse(nft_ctx_get_output_buffer(m_nftCtx));
+
+    nft_ctx_unbuffer_output(m_nftCtx);
+    
+    for (auto item : output["nftables"]) {
+        if (!item["chain"].is_null()) {
+            if (item["chain"]["table"] == "dlserverpicker") {
+                if (item["chain"]["name"] == location.identifier.c_str()) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 void LinuxFirewallManager::BlockLocation(ServerData::Location const &location)
 {
-    wxString rule = wxString::Format("deadlock_%s", location.identifier);
+    int rc = nft_run_cmd_from_buffer(m_nftCtx, "add table inet dlserverpicker");
 
-    nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
-        "add table inet %s", rule
-    ));
-
-    nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
-        "add chain inet %s output { type filter hook output priority 0; }",
-        rule
-    ));
-
-    for (size_t i = 0; i < location.relays.size(); i++) {
-        nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
-            "add rule inet %s output ip daddr %s drop",
-            rule, location.relays[i].ipv4
-        ));
+    if (rc != 0) {
+        throw std::runtime_error("nftables: failed to create table!");
     }
 
-    m_definedRules.emplace_back(rule);
+    rc = nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
+        "add chain inet dlserverpicker %s { type filter hook output priority 0; }",
+        location.identifier
+    ));
+
+    if (rc != 0) {
+        throw std::runtime_error("nftables: failed to add chain!");
+    }
+
+    for (size_t i = 0; i < location.relays.size(); i++) {
+        rc = nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
+            "add rule inet dlserverpicker %s ip daddr %s drop",
+            location.identifier, location.relays[i].ipv4));
+
+        if (rc != 0) {
+            nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
+                "delete chain inet dlserverpicker %s",
+                location.identifier));
+
+            throw std::runtime_error("nftables: failed to add rule!");
+        }
+    }
 }
 
 void LinuxFirewallManager::UnblockLocation(ServerData::Location const &location)
 {
-    wxString rule = wxString::Format("deadlock_%s", location.identifier);
+    nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
+        "flush chain inet dlserverpicker %s",
+        location.identifier));
 
-    int rc = nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
-        "destroy table inet %s", rule
-    ));
-
-    if (rc == 0) {
-        m_definedRules.erase(std::find(m_definedRules.begin(), m_definedRules.end(), rule));
-    }
+    nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
+        "delete chain inet dlserverpicker %s",
+        location.identifier));
 }
 
 void LinuxFirewallManager::Clear()
 {
-    CheckTables(); // just in case(?)
-
-    for (wxString const &rule : m_definedRules) {
-        nft_run_cmd_from_buffer(m_nftCtx, wxString::Format(
-            "destroy table inet %s", rule
-        ));
-    }
-
-    m_definedRules.clear();
+    nft_run_cmd_from_buffer(m_nftCtx, "destroy table inet dlserverpicker");
 }
 
 bool LinuxFirewallManager::IsClear()
 {
-    return m_definedRules.empty();
-}
+    int rc = nft_run_cmd_from_buffer(m_nftCtx, "list table inet dlserverpicker");
 
-void LinuxFirewallManager::CheckTables()
-{
-    m_definedRules.clear();
-
-    nft_run_cmd_from_buffer(m_nftCtx, "list tables inet");
-
-    auto output = nlohmann::json::parse(nft_ctx_get_output_buffer(m_nftCtx));
-    auto nftables = output["nftables"];
-
-    if (nftables.is_null()) {
-        return;
+    if (rc != 0) {
+        return true;
     }
 
-    for (auto item : nftables) {
-        auto table = item["table"];
-
-        if (table.is_null()) {
-            continue;
-        }
-
-        wxString name = table["name"].get<std::string>();
-
-        if (name.StartsWith("deadlock_")) {
-            m_definedRules.emplace_back(name);
-        }
-    }
+    return false;
 }
 
 //------------------------------------------------------------------------------
