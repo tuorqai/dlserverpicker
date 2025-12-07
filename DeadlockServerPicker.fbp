@@ -50,7 +50,7 @@
       <property name="minimum_size">200,200</property>
       <property name="name">MainFrameLayout</property>
       <property name="pos"></property>
-      <property name="size">500,500</property>
+      <property name="size">600,500</property>
       <property name="style">wxDEFAULT_FRAME_STYLE</property>
       <property name="subclass">; ; forward_declare</property>
       <property name="title">Deadlock Server Picker</property>
@@ -334,6 +334,17 @@
                               <property name="align">wxALIGN_LEFT</property>
                               <property name="ellipsize"></property>
                               <property name="flags">wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE</property>
+                              <property name="label">Blocked</property>
+                              <property name="mode">wxDATAVIEW_CELL_ACTIVATABLE</property>
+                              <property name="name">m_serverDataBlockedCol</property>
+                              <property name="permission">protected</property>
+                              <property name="type">Toggle</property>
+                              <property name="width">80</property>
+                            </object>
+                            <object class="dataViewListColumn" expanded="false">
+                              <property name="align">wxALIGN_LEFT</property>
+                              <property name="ellipsize"></property>
+                              <property name="flags">wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE</property>
                               <property name="label">Identifier</property>
                               <property name="mode">wxDATAVIEW_CELL_INERT</property>
                               <property name="name">m_serverDataIdCol</property>
@@ -352,16 +363,16 @@
                               <property name="type">Text</property>
                               <property name="width">200</property>
                             </object>
-                            <object class="dataViewListColumn" expanded="false">
+                            <object class="dataViewListColumn" expanded="true">
                               <property name="align">wxALIGN_LEFT</property>
                               <property name="ellipsize"></property>
                               <property name="flags">wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE</property>
-                              <property name="label">Blocked</property>
-                              <property name="mode">wxDATAVIEW_CELL_ACTIVATABLE</property>
-                              <property name="name">m_serverDataBlockedCol</property>
+                              <property name="label">Region</property>
+                              <property name="mode">wxDATAVIEW_CELL_INERT</property>
+                              <property name="name">m_serverDataRegionCol</property>
                               <property name="permission">protected</property>
-                              <property name="type">Toggle</property>
-                              <property name="width">80</property>
+                              <property name="type">Text</property>
+                              <property name="width">100</property>
                             </object>
                             <object class="dataViewListColumn" expanded="false">
                               <property name="align">wxALIGN_LEFT</property>

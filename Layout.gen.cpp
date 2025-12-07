@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 4.2.1-0-g80c4cb6)
+// C++ code generated with wxFormBuilder (version 4.2.1-0-g80c4cb6-dirty)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -30,9 +30,10 @@ MainFrameLayout::MainFrameLayout( wxWindow* parent, wxWindowID id, const wxStrin
 	serverDataSizer->Add( m_revisionLabel, 0, wxALL, 5 );
 
 	m_serverDataView = new wxDataViewListCtrl( m_serverListPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDV_ROW_LINES|wxDV_VERT_RULES );
+	m_serverDataBlockedCol = m_serverDataView->AppendToggleColumn( _("Blocked"), wxDATAVIEW_CELL_ACTIVATABLE, 80, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE );
 	m_serverDataIdCol = m_serverDataView->AppendTextColumn( _("Identifier"), wxDATAVIEW_CELL_INERT, 100, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE );
 	m_serverDataDescCol = m_serverDataView->AppendTextColumn( _("Description"), wxDATAVIEW_CELL_INERT, 200, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE );
-	m_serverDataBlockedCol = m_serverDataView->AppendToggleColumn( _("Blocked"), wxDATAVIEW_CELL_ACTIVATABLE, 80, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE );
+	m_serverDataRegionCol = m_serverDataView->AppendTextColumn( _("Region"), wxDATAVIEW_CELL_INERT, 100, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE );
 	m_serverDataPingCol = m_serverDataView->AppendTextColumn( _("Ping"), wxDATAVIEW_CELL_INERT, 80, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE|wxDATAVIEW_COL_SORTABLE );
 	serverDataSizer->Add( m_serverDataView, 2, wxALL|wxEXPAND, 5 );
 

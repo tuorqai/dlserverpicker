@@ -5,9 +5,10 @@
 
 enum ServerDataColumn
 {
+    SERVER_DATA_COL_BLOCKED,
     SERVER_DATA_COL_ID,
     SERVER_DATA_COL_DESC,
-    SERVER_DATA_COL_BLOCKED,
+    SERVER_DATA_COL_REGION,
     SERVER_DATA_COL_PING,
 };
 
@@ -66,6 +67,9 @@ void ServerDataModel::GetValue(wxVariant &variant, wxDataViewItem const &item, u
         break;
     case SERVER_DATA_COL_BLOCKED:
         variant = FirewallManager::Get()->IsLocationBlocked(location);
+        break;
+    case SERVER_DATA_COL_REGION:
+        variant = MapLocationToRegion(location);
         break;
     case SERVER_DATA_COL_PING:
         if (location.ping == -2) {
