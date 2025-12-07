@@ -1,4 +1,4 @@
 
 #pragma once
 
-#define DL_SERVER_PICKER_VERSION "2025.06"
+#define DL_SERVER_PICKER_VERSION "2025.12"
