@@ -36,6 +36,7 @@ public:
     FirewallManagerWindows();
     ~FirewallManagerWindows();
 
+    bool CheckPermissions() override;
     bool IsFirewallEnabled() override;
     bool IsLocationBlocked(ServerData::Location const &location) override;
 
@@ -104,6 +105,12 @@ FirewallManagerWindows::~FirewallManagerWindows()
     if (SUCCEEDED(m_hrCoInitEx)) {
         CoUninitialize();
     }
+}
+
+bool FirewallManagerWindows::CheckPermissions()
+{
+    // guaranteed to be launched with admin privileges
+    return true;
 }
 
 bool FirewallManagerWindows::IsFirewallEnabled()

@@ -5,6 +5,7 @@
 
 #include <nftables/libnftables.h>
 #include <nlohmann/json.hpp>
+#include <sys/capability.h>
 
 //------------------------------------------------------------------------------
 
@@ -14,6 +15,7 @@ public:
     LinuxFirewallManager();
     ~LinuxFirewallManager();
 
+    bool CheckPermissions() override;
     bool IsFirewallEnabled() override;
     bool IsLocationBlocked(ServerData::Location const &location) override;
 
@@ -43,6 +45,26 @@ LinuxFirewallManager::LinuxFirewallManager()
 LinuxFirewallManager::~LinuxFirewallManager()
 {
     nft_ctx_free(m_nftCtx);
+}
+
+bool LinuxFirewallManager::CheckPermissions()
+{
+    bool isAdminCapSet = false;
+
+    cap_t caps = cap_get_proc();
+
+    if (caps) {
+        cap_flag_value_t admin;
+        cap_get_flag(caps, CAP_NET_ADMIN, CAP_EFFECTIVE, &admin);
+
+        if (admin == CAP_SET) {
+            isAdminCapSet = true;
+        }
+
+        cap_free(caps);
+    }
+
+    return isAdminCapSet;
 }
 
 bool LinuxFirewallManager::IsFirewallEnabled()

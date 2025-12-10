@@ -51,6 +51,21 @@ MainFrame::MainFrame()
     m_syncServersGauge->Hide();
     m_emptyListPanel->Layout();
 
+    // Check if allowed to modify firewall rules.
+    if (!FirewallManager::Get()->CheckPermissions()) {
+        // The message here refers to Linux only which is
+        // incredibly broken approach from OOP standpoint.
+        // Meh, too lazy to do it better.
+        wxMessageBox(
+            _("You have no permissions to modify nftables.\n"
+              "Either run this program as root (e.g. with sudo) "
+              "or use setcaps to permit network administration (refer to README)."),
+            _("No permissions to modify nftables"),
+            wxOK | wxICON_ASTERISK
+        );
+        Close();
+    }
+
     // Show a warning if the firewall is disabled.
     if (!FirewallManager::Get()->IsFirewallEnabled()) {
         wxMessageBox(
@@ -59,6 +74,7 @@ MainFrame::MainFrame()
             _("Firewall is disabled"),
             wxOK | wxICON_ASTERISK
         );
+        Close();
     }
 
 #if defined(WIN32)
