@@ -42,3 +42,7 @@ jobs:
     
     - name: Build
       run: cmake --build --preset linux-rel
+
+    - uses: actions/upload-artifact@v4
+      with:
+        path: out/build/linux/Release/DeadlockServerPicker
