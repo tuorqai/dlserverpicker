@@ -53,6 +53,7 @@ bool LinuxFirewallManager::IsFirewallEnabled()
 bool LinuxFirewallManager::IsLocationBlocked(ServerData::Location const &location)
 {
     nft_ctx_buffer_output(m_nftCtx);
+    nft_ctx_buffer_error(m_nftCtx);
 
     int rc = nft_run_cmd_from_buffer(m_nftCtx, "list table inet dlserverpicker");
 
@@ -62,6 +63,7 @@ bool LinuxFirewallManager::IsLocationBlocked(ServerData::Location const &locatio
 
     auto output = nlohmann::json::parse(nft_ctx_get_output_buffer(m_nftCtx));
 
+    nft_ctx_unbuffer_error(m_nftCtx);
     nft_ctx_unbuffer_output(m_nftCtx);
     
     for (auto item : output["nftables"]) {
@@ -127,7 +129,13 @@ void LinuxFirewallManager::Clear()
 
 bool LinuxFirewallManager::IsClear()
 {
+    nft_ctx_buffer_output(m_nftCtx);
+    nft_ctx_buffer_error(m_nftCtx);
+
     int rc = nft_run_cmd_from_buffer(m_nftCtx, "list table inet dlserverpicker");
+
+    nft_ctx_unbuffer_error(m_nftCtx);
+    nft_ctx_unbuffer_output(m_nftCtx);
 
     if (rc != 0) {
         return true;
