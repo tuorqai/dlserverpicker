@@ -8,6 +8,7 @@
 #include "PingTest.h"
 #include "ServerDataModel.h"
 #include "Version.h"
+#include "DeadlockServerPicker.xpm"
 
 //------------------------------------------------------------------------------
 
@@ -16,6 +17,8 @@ MainFrame::MainFrame()
     , m_serverDataModel(new ServerDataModel(m_serverData))
     , m_savedGameChoice(0)
 {
+    SetIcons(wxICON(dlsp));
+    
     // [Ping Test] A single location is tested.
     Bind(EVT_PING_TEST_PROGRESS, &MainFrame::OnPingTestProgress, this);
 
@@ -76,10 +79,6 @@ MainFrame::MainFrame()
         );
         Close();
     }
-
-#if defined(WIN32)
-    SetIcons(wxICON(dlsp));
-#endif
 
     m_infoLabel->SetLabelText("Deadlock Server Picker v" DL_SERVER_PICKER_VERSION);
 }
