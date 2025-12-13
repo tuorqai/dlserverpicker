@@ -36,7 +36,10 @@ jobs:
     - uses: actions/checkout@v4
   
     - name: Install dependencies
-      run: apt update && apt install -y build-essential cmake ninja-build libgtk-3-dev libnftables-dev libcurl4-openssl-dev libcap-dev
+      run: >
+        apt update && apt install -y
+        build-essential cmake ninja-build git
+        libnftables-dev libcap-dev libgtk-3-dev libcurl4-openssl-dev 
   
     - name: Configure CMake
       run: cmake --preset linux
