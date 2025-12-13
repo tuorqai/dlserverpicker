@@ -1,5 +1,33 @@
 cmake_minimum_required(VERSION 3.14)
-project(DeadlockServerPicker)
+project(DeadlockServerPicker VERSION 2025.12)
+
+#-------------------------------------------------------------------------------
+
+find_package(Git QUIET)
+
+if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} describe --tags --dirty --always --match "v*"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_DESCRIBE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+
+if(GIT_DESCRIBE)
+    if(GIT_DESCRIBE MATCHES "^v?${PROJECT_VERSION}$")
+        set(VERBOSE_VERSION "${PROJECT_VERSION}")
+    else()
+        string(REGEX REPLACE "^v${PROJECT_VERSION}-" "" GIT_SUFFIX "${GIT_DESCRIBE}")
+        set(VERBOSE_VERSION "${PROJECT_VERSION}-git-${GIT_SUFFIX}")
+    endif()
+else()
+    set(VERBOSE_VERSION "${PROJECT_VERSION}")
+endif()
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/Version.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/Version.h"
+    @ONLY)
 
 #-------------------------------------------------------------------------------
 
@@ -9,6 +37,11 @@ add_executable(${PROJECT_NAME} WIN32
     "MainFrame.cpp"
     "ServerData.cpp"
     "ServerDataModel.cpp")
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 if(WIN32)
     # Windows-specific sources

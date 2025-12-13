@@ -1,0 +1,4 @@
+
+#pragma once
+
+#define DL_SERVER_PICKER_VERSION "@VERBOSE_VERSION@"
