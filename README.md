@@ -17,3 +17,31 @@ which was the reason I made this program.
 - The program requires admin privileges in order to add rules to your firewall.
 - Select servers you wish to block.
 - That's it.
+
+## For Linux users
+
+> [!NOTE]
+> Don't forget to `chmod +x DeadlockServerPicker`.
+
+> [!WARNING]
+> Changes are not persistent, they don't survive reboot.
+
+Deadlock Server Picker needs privileges to alter nftables. There are two ways to run
+the executable with sufficient privileges:
+
+Simple way with `sudo`:
+```
+sudo ./DeadlockServerPicker
+```
+
+Correct way with `setcap`:
+```
+sudo setcap cap_net_admin+ep DeadlockServerPicker
+./DeadlockServerPicker
+```
+
+Running `setcap` is required once, not before every run.
+
+## Why wxWidgets?
+
+For the 2000s nostalgia.
