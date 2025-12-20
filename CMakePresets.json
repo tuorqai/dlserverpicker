@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 4,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 23,
@@ -18,6 +18,15 @@
       "cacheVariables": {
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
       }
+    },
+    {
+      "name": "linux",
+      "displayName": "Linux",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+      }
     }
   ],
   "buildPresets": [
@@ -29,6 +38,16 @@
     {
       "name": "win64-rel",
       "configurePreset": "win64",
+      "configuration": "Release"
+    },
+    {
+      "name": "linux-dbg",
+      "configurePreset": "linux",
+      "configuration": "Debug"
+    },
+    {
+      "name": "linux-rel",
+      "configurePreset": "linux",
       "configuration": "Release"
     }
   ]

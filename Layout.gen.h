@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 4.2.1-0-g80c4cb6)
+// C++ code generated with wxFormBuilder (version 4.2.1-0-g80c4cb6-dirty)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -43,9 +43,10 @@ class MainFrameLayout : public wxFrame
 		wxPanel* m_serverListPanel;
 		wxStaticText* m_revisionLabel;
 		wxDataViewListCtrl* m_serverDataView;
+		wxDataViewColumn* m_serverDataBlockedCol;
 		wxDataViewColumn* m_serverDataIdCol;
 		wxDataViewColumn* m_serverDataDescCol;
-		wxDataViewColumn* m_serverDataBlockedCol;
+		wxDataViewColumn* m_serverDataRegionCol;
 		wxDataViewColumn* m_serverDataPingCol;
 		wxPanel* m_emptyListPanel;
 		wxStaticText* m_emptyListLabel;
@@ -59,7 +60,7 @@ class MainFrameLayout : public wxFrame
 
 	public:
 
-		MainFrameLayout( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Deadlock Server Picker"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,500 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		MainFrameLayout( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Deadlock Server Picker"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 600,500 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~MainFrameLayout();
 

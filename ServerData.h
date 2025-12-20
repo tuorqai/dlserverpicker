@@ -42,3 +42,5 @@ private:
     wxUint64 m_revision;
     wxVector<Location> m_locations;
 };
+
+wxString MapLocationToRegion(ServerData::Location const &location);

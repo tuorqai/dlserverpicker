@@ -25,4 +25,29 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
+        name: win64-build
         path: out/build/win64/Release/DeadlockServerPicker.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    container: debian:bookworm
+
+    steps:
+    - uses: actions/checkout@v4
+  
+    - name: Install dependencies
+      run: >
+        apt update && apt install -y
+        build-essential cmake ninja-build git
+        libnftables-dev libcap-dev libgtk-3-dev libcurl4-openssl-dev 
+  
+    - name: Configure CMake
+      run: cmake --preset linux
+    
+    - name: Build
+      run: cmake --build --preset linux-rel
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: linux-build
+        path: out/build/linux/Release/DeadlockServerPicker

@@ -16,6 +16,7 @@ public:
     FirewallManager() = default;
     virtual ~FirewallManager() = default;
 
+    virtual bool CheckPermissions() = 0;
     virtual bool IsFirewallEnabled() = 0;
     virtual bool IsLocationBlocked(ServerData::Location const &location) = 0;
 
