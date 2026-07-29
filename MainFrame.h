@@ -31,9 +31,15 @@ private:
     void ServerSyncFailed(wxString const &errDesc);
 
     void OnServerDataUpdate();
+    void OnWebRequestComplete(wxWebRequestEvent const &event);
+
+    void IronCurtainWarning(wxString const &country);
 
     wxString m_requestResult;
     ServerData m_serverData;
     wxObjectDataPtr<wxDataViewModel> m_serverDataModel;
     int m_savedGameChoice;
+
+    wxWebRequest m_syncRequest;
+    wxWebRequest m_geoRequest;
 };

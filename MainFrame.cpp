@@ -25,17 +25,8 @@ MainFrame::MainFrame()
     // [Ping Test] All locations are tested.
     Bind(EVT_PING_TEST_COMPLETED, &MainFrame::OnPingTestCompleted, this);
 
-    // Server sync web request are handled here
-    Bind(wxEVT_WEBREQUEST_STATE, [this](wxWebRequestEvent const &event) {
-        switch (event.GetState()) {
-        case wxWebRequest::State_Completed:
-            ServerSyncCompleted(event.GetResponse());
-            break;
-        case wxWebRequest::State_Failed:
-            ServerSyncFailed(event.GetErrorDescription());
-            break;
-        }
-    });
+    // All web requests are handled there.
+    Bind(wxEVT_WEBREQUEST_STATE, &MainFrame::OnWebRequestComplete, this);
 
     // Bottom row of buttons
     m_syncServersButton->Bind(wxEVT_BUTTON, &MainFrame::OnServerSyncInvoked, this);
@@ -81,6 +72,12 @@ MainFrame::MainFrame()
     }
 
     m_infoLabel->SetLabelText("Deadlock Server Picker v" DL_SERVER_PICKER_VERSION);
+
+    // [Geolocation] This is needed to warn RU users.
+    m_geoRequest = wxWebSession::GetDefault().CreateRequest(this, "https://api.country.is/");
+    if (m_geoRequest.IsOk()) {
+        m_geoRequest.Start();
+    }
 }
 
 void MainFrame::OnServerSyncInvoked(wxCommandEvent const &event)
@@ -114,15 +111,15 @@ void MainFrame::OnServerSyncInvoked(wxCommandEvent const &event)
     }
 
     wxString url = wxString::Format("https://api.steampowered.com/ISteamApps/GetSDRConfig/v1/?appid=%d", 1422450);
-    wxWebRequest request = wxWebSession::GetDefault().CreateRequest(this, url);
+    m_syncRequest = wxWebSession::GetDefault().CreateRequest(this, url);
 
-    if (!request.IsOk()) {
+    if (!m_syncRequest.IsOk()) {
         wxMessageBox(_("Unable to sync server list. Check your Internet connection."),
                      _("Sync Error"), wxOK | wxICON_ERROR, this);
         return;
     }
 
-    request.Start();
+    m_syncRequest.Start();
 
     m_serverListSimplebook->SetSelection(1);
 
@@ -259,4 +256,52 @@ void MainFrame::OnServerDataUpdate()
     m_testPingButton->Enable(!isDataEmpty);
     m_blockAllButton->Enable(!isDataEmpty);
     m_unblockAllButton->Enable(!isDataEmpty);
+}
+
+void MainFrame::OnWebRequestComplete(wxWebRequestEvent const &event)
+{
+    if (m_syncRequest.IsOk() && event.GetRequest().GetId() == m_syncRequest.GetId()) {
+        switch (event.GetState()) {
+        case wxWebRequest::State_Completed:
+            ServerSyncCompleted(event.GetResponse());
+            break;
+        case wxWebRequest::State_Failed:
+            ServerSyncFailed(event.GetErrorDescription());
+            break;
+        default:
+            break;
+        }
+    } else if (m_geoRequest.IsOk() && event.GetRequest().GetId() == m_geoRequest.GetId()) {
+        switch (event.GetState()) {
+        case wxWebRequest::State_Completed:
+            {
+                wxWebResponse response = m_geoRequest.GetResponse();
+                if (response.GetStatus() == 200) {
+                    std::string country;
+                    JSON::parse(response.AsString()).at("country").get_to(country);
+
+                    if (country == "RU") {
+                        IronCurtainWarning(country);
+                    }
+                }
+            }
+            break;
+        case wxWebRequest::State_Failed:
+            break;
+        case wxWebRequest::State_Cancelled:
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void MainFrame::IronCurtainWarning(wxString const &country)
+{
+    wxString msg = wxString::Format(_("Your IP is detected to be from %s. "
+        "This country is currently region-locked by Valve. "
+        "This means you will get matched with players from %s only."),
+        country, country);
+    
+    wxMessageBox(msg, _("You're behind the Iron Curtain"), wxICON_WARNING);
 }
