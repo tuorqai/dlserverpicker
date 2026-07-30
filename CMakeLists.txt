@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(DeadlockServerPicker VERSION 2025.12)
+project(DeadlockServerPicker VERSION 2026.07)
 
 #-------------------------------------------------------------------------------
 
