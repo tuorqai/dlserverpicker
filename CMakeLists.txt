@@ -82,7 +82,7 @@ else()
     set(wxBUILD_SAMPLES OFF)
     set(wxBUILD_INSTALL OFF)
 
-    FetchContent_Declare(wxWidgets URL https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.7/wxWidgets-3.2.7.tar.bz2)
+    FetchContent_Declare(wxWidgets URL https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.12/wxWidgets-3.2.12.tar.bz2)
     FetchContent_MakeAvailable(wxWidgets)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE wxcore wxnet wxbase)
