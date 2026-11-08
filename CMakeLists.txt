@@ -82,7 +82,7 @@ else()
     set(wxBUILD_SAMPLES OFF)
     set(wxBUILD_INSTALL OFF)
 
-    FetchContent_Declare(wxWidgets URL https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.7/wxWidgets-3.2.7.tar.bz2)
+    FetchContent_Declare(wxWidgets URL https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.12/wxWidgets-3.2.12.tar.bz2)
     FetchContent_MakeAvailable(wxWidgets)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE wxcore wxnet wxbase)
@@ -90,7 +90,7 @@ endif()
 
 #-------------------------------------------------------------------------------
 
-FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
 FetchContent_MakeAvailable(json)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
